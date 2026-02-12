@@ -7,4 +7,22 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Exclude nested ClavierOr project files from this root project default globs -->
+    <Compile Remove="ClavierOr\**\*.cs" />
+    <None Remove="ClavierOr\**\*.*" />
+    <Content Remove="ClavierOr\**\*.*" />
+    <EmbeddedResource Remove="ClavierOr\**\*.*" />
+    <Page Remove="ClavierOr\**\*.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

@@ -57,3 +57,5 @@ public enum TypeJoker
     DoublePoints,        // Double les points de la question
     PasserQuestion       // Passer à la question suivante
 }
+
+// public sealed class JokerTypes
