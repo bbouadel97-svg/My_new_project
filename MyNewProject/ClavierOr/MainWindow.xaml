@@ -3,10 +3,119 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ClavierOr"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Clavier d'Or" Height="760" Width="1120" MinHeight="640" MinWidth="980">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
+        <TextBlock Text="Clavier d'Or - Quiz compétitif" FontSize="24" FontWeight="Bold"/>
+
+        <Border Grid.Row="1" Padding="10" Margin="0,10,0,10" BorderBrush="LightGray" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                    <TextBlock Text="Pseudo joueur"/>
+                    <TextBox x:Name="PlayerNameTextBox" Height="30" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                    <TextBlock Text="Rôle"/>
+                    <ComboBox x:Name="RoleComboBox" Height="30" Margin="0,4,0,0" SelectionChanged="RoleComboBox_SelectionChanged"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                    <Button x:Name="NewGameButton" Content="Nouvelle partie" Width="130" Height="32" Margin="0,0,6,0" Click="NewGameButton_Click"/>
+                    <Button x:Name="ResumeGameButton" Content="Reprendre" Width="90" Height="32" Margin="0,0,6,0" Click="ResumeGameButton_Click"/>
+                    <Button x:Name="SaveButton" Content="Enregistrer" Width="100" Height="32" Click="SaveButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.2*"/>
+                <ColumnDefinition Width="1.3*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Padding="12" BorderBrush="LightGray" BorderThickness="1" Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="StatusTextBlock" Text="Prêt" FontWeight="SemiBold" FontSize="14"/>
+                    <TextBlock x:Name="QuestionTextBlock" Grid.Row="1" Margin="0,10,0,12" FontSize="18" TextWrapping="Wrap" Text="Cliquez sur 'Nouvelle partie' pour démarrer."/>
+
+                    <StackPanel x:Name="AnswersPanel" Grid.Row="2"/>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button x:Name="HintButton" Content="Indice" Width="90" Height="30" Margin="0,0,8,0" Click="HintButton_Click"/>
+                        <Button x:Name="SkipButton" Content="Changer question" Width="140" Height="30" Margin="0,0,8,0" Click="SkipButton_Click"/>
+                        <Button x:Name="DoubleButton" Content="Double points" Width="110" Height="30" Click="DoubleButton_Click"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="HintTextBlock" Grid.Row="4" Margin="0,10,0,0" Foreground="DarkSlateBlue" TextWrapping="Wrap"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Padding="12" BorderBrush="LightGray" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Tableau de bord" FontWeight="Bold" FontSize="16"/>
+                    <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                        <TextBlock x:Name="PlayerInfoTextBlock"/>
+                        <TextBlock x:Name="ScoreInfoTextBlock" Margin="0,4,0,0"/>
+                        <TextBlock x:Name="RoleInfoTextBlock" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <GroupBox Grid.Row="2" Header="Historique" Margin="0,12,0,8">
+                        <ListBox x:Name="HistoryListBox"/>
+                    </GroupBox>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,4,0,4">
+                        <Button x:Name="FinishButton" Content="Terminer partie" Width="120" Height="30" Margin="0,0,8,0" Click="FinishButton_Click"/>
+                        <Button x:Name="ExportPdfButton" Content="Export PDF" Width="100" Height="30" Click="ExportPdfButton_Click"/>
+                    </StackPanel>
+
+                    <GroupBox Grid.Row="4" Header="Scores sauvegardés">
+                        <DataGrid x:Name="ScoresDataGrid" AutoGenerateColumns="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Date" Binding="{Binding DatePartie, StringFormat=dd/MM/yyyy HH:mm}" Width="*"/>
+                                <DataGridTextColumn Header="Pseudo" Binding="{Binding Joueur.Pseudo}" Width="*"/>
+                                <DataGridTextColumn Header="Points" Binding="{Binding Points}" Width="80"/>
+                                <DataGridTextColumn Header="Réussite" Binding="{Binding PourcentageReussite, StringFormat={}{0:F0}%}" Width="90"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <StatusBar Grid.Row="3" Margin="0,10,0,0">
+            <StatusBarItem>
+                <TextBlock x:Name="FooterTextBlock" Text="ORM EF Core actif - prêt."/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

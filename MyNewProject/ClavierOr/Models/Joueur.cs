@@ -4,7 +4,7 @@ namespace ClavierOr.Models;
 
 /// <summary>
 /// Représente un joueur dans le jeu Clavier d'Or
-/// </summary>
+/// </summary> 
 public class Joueur
 {
     public int Id { get; set; }
