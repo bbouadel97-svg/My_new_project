@@ -12,88 +12,116 @@ public class GameService
     {
         using var db = new ClavierOrContext();
 
-        if (!db.Set<Role>().Any())
+        if (!db.Set<Role>().Any(r => r.Nom == "Front-End"))
         {
-            db.Set<Role>().AddRange(new[]
-            {
-                new Role("Front-End", "Spécialiste interface", 3, 1.0, "Peut changer de question + bonus de fluidité UI"),
-                new Role("Back-End", "Spécialiste logique serveur", 5, 1.0, "Rattrapage automatique une fois + robustesse"),
-                new Role("Mobile", "Spécialiste mobile", 2, 1.05, "Accès aux indices + multiplicateur léger")
-            });
+            db.Set<Role>().Add(new Role("Front-End", "Spécialiste interface", 3, 1.0, "Peut changer de question + bonus de fluidité UI"));
         }
 
-        if (!db.Questions.Any())
+        if (!db.Set<Role>().Any(r => r.Nom == "Back-End"))
         {
-            var q1 = new Question("Quel principe POO permet de cacher l'implémentation ?", DifficulteQuestion.Facile, CategorieQuestion.POO)
-            {
-                Reponses =
-                {
-                    new Reponse("Encapsulation", true, "L'encapsulation protège l'état interne."),
-                    new Reponse("Héritage", false),
-                    new Reponse("Polymorphisme", false),
-                    new Reponse("Abstraction uniquement", false)
-                }
-            };
-
-            var q2 = new Question("Quel mot-clé C# permet de définir une classe héritée ?", DifficulteQuestion.Facile, CategorieQuestion.POO)
-            {
-                Reponses =
-                {
-                    new Reponse(":", true, "On utilise ':' pour hériter en C#."),
-                    new Reponse("inherits", false),
-                    new Reponse("extends", false),
-                    new Reponse("->", false)
-                }
-            };
-
-            var q3 = new Question("Quelle commande Git combine fetch et merge ?", DifficulteQuestion.Moyen, CategorieQuestion.Git)
-            {
-                Reponses =
-                {
-                    new Reponse("git pull", true, "git pull = fetch + merge/rebase selon config."),
-                    new Reponse("git stash", false),
-                    new Reponse("git clone", false),
-                    new Reponse("git reset", false)
-                }
-            };
-
-            var q4 = new Question("En SQL, quelle clause filtre les groupes agrégés ?", DifficulteQuestion.Moyen, CategorieQuestion.BaseDeDonnees)
-            {
-                Reponses =
-                {
-                    new Reponse("HAVING", true, "HAVING agit après GROUP BY."),
-                    new Reponse("WHERE", false),
-                    new Reponse("ORDER BY", false),
-                    new Reponse("LIMIT", false)
-                }
-            };
-
-            var q5 = new Question("Quel pattern évite de créer plusieurs instances globales d'une classe ?", DifficulteQuestion.Difficile, CategorieQuestion.Architecture)
-            {
-                Reponses =
-                {
-                    new Reponse("Singleton", true),
-                    new Reponse("Factory", false),
-                    new Reponse("Adapter", false),
-                    new Reponse("Builder", false)
-                }
-            };
-
-            var q6 = new Question("Lors d'une attaque XSS, quel mécanisme est prioritaire ?", DifficulteQuestion.Boss, CategorieQuestion.Securite)
-            {
-                Reponses =
-                {
-                    new Reponse("Encoder/échapper la sortie HTML", true, "L'encodage output est une défense clé contre XSS."),
-                    new Reponse("Désactiver JavaScript", false),
-                    new Reponse("Changer le port HTTP", false),
-                    new Reponse("Compresser les scripts", false)
-                }
-            };
-
-            db.Questions.AddRange(q1, q2, q3, q4, q5, q6);
+            db.Set<Role>().Add(new Role("Back-End", "Spécialiste logique serveur", 5, 1.0, "Rattrapage automatique une fois + robustesse"));
         }
+
+        if (!db.Set<Role>().Any(r => r.Nom == "Mobile"))
+        {
+            db.Set<Role>().Add(new Role("Mobile", "Spécialiste mobile", 2, 1.05, "Accès aux indices + multiplicateur léger"));
+        }
+
+        AjouterQuestionEtReponsesManquantes(
+            db,
+            "Quel principe POO permet de cacher l'implémentation ?",
+            DifficulteQuestion.Facile,
+            CategorieQuestion.POO,
+            new Reponse("Encapsulation", true, "L'encapsulation protège l'état interne."),
+            new Reponse("Héritage", false),
+            new Reponse("Polymorphisme", false),
+            new Reponse("Abstraction uniquement", false));
+
+        AjouterQuestionEtReponsesManquantes(
+            db,
+            "Quel mot-clé C# permet de définir une classe héritée ?",
+            DifficulteQuestion.Facile,
+            CategorieQuestion.POO,
+            new Reponse(":", true, "On utilise ':' pour hériter en C#."),
+            new Reponse("inherits", false),
+            new Reponse("extends", false),
+            new Reponse("->", false));
+
+        AjouterQuestionEtReponsesManquantes(
+            db,
+            "Quelle commande Git combine fetch et merge ?",
+            DifficulteQuestion.Moyen,
+            CategorieQuestion.Git,
+            new Reponse("git pull", true, "git pull = fetch + merge/rebase selon config."),
+            new Reponse("git stash", false),
+            new Reponse("git clone", false),
+            new Reponse("git reset", false));
+
+        AjouterQuestionEtReponsesManquantes(
+            db,
+            "En SQL, quelle clause filtre les groupes agrégés ?",
+            DifficulteQuestion.Moyen,
+            CategorieQuestion.BaseDeDonnees,
+            new Reponse("HAVING", true, "HAVING agit après GROUP BY."),
+            new Reponse("WHERE", false),
+            new Reponse("ORDER BY", false),
+            new Reponse("LIMIT", false));
+
+        AjouterQuestionEtReponsesManquantes(
+            db,
+            "Quel pattern évite de créer plusieurs instances globales d'une classe ?",
+            DifficulteQuestion.Difficile,
+            CategorieQuestion.Architecture,
+            new Reponse("Singleton", true),
+            new Reponse("Factory", false),
+            new Reponse("Adapter", false),
+            new Reponse("Builder", false));
+
+        AjouterQuestionEtReponsesManquantes(
+            db,
+            "Lors d'une attaque XSS, quel mécanisme est prioritaire ?",
+            DifficulteQuestion.Boss,
+            CategorieQuestion.Securite,
+            new Reponse("Encoder/échapper la sortie HTML", true, "L'encodage output est une défense clé contre XSS."),
+            new Reponse("Désactiver JavaScript", false),
+            new Reponse("Changer le port HTTP", false),
+            new Reponse("Compresser les scripts", false));
 
         db.SaveChanges();
+    }
+
+    private static void AjouterQuestionEtReponsesManquantes(
+        ClavierOrContext db,
+        string enonce,
+        DifficulteQuestion difficulte,
+        CategorieQuestion categorie,
+        params Reponse[] reponses)
+    {
+        var question = db.Questions
+            .Include(q => q.Reponses)
+            .FirstOrDefault(q => q.Enonce == enonce);
+
+        if (question is null)
+        {
+            question = new Question(enonce, difficulte, categorie);
+            foreach (var reponse in reponses)
+            {
+                question.Reponses.Add(new Reponse(reponse.Texte, reponse.EstCorrect, reponse.Explication));
+            }
+
+            db.Questions.Add(question);
+            return;
+        }
+
+        foreach (var reponse in reponses)
+        {
+            if (question.Reponses.Any(r => r.Texte == reponse.Texte))
+            {
+                continue;
+            }
+
+            question.Reponses.Add(new Reponse(reponse.Texte, reponse.EstCorrect, reponse.Explication));
+        }
     }
 
     public List<Role> GetRoles()
@@ -277,22 +305,60 @@ public class GameService
         return true;
     }
 
-    public void PersistProgress(Joueur joueur, Partie partie, Score score)
+    public void PersistProgress(Joueur joueur, Partie partie, Score score, bool logAction = true)
     {
         using var db = new ClavierOrContext();
 
-        db.Joueurs.Update(joueur);
-        db.Parties.Update(partie);
-        db.Scores.Update(score);
+        var dbJoueur = db.Joueurs.FirstOrDefault(j => j.Id == joueur.Id);
+        if (dbJoueur is not null)
+        {
+            dbJoueur.Pseudo = joueur.Pseudo;
+            dbJoueur.Email = joueur.Email;
+            dbJoueur.DateInscription = joueur.DateInscription;
+            dbJoueur.ScoreTotal = joueur.ScoreTotal;
+            dbJoueur.NiveauActuel = joueur.NiveauActuel;
+            dbJoueur.ExperienceActuelle = joueur.ExperienceActuelle;
+            dbJoueur.EstClavierOr = joueur.EstClavierOr;
+            dbJoueur.RoleId = joueur.RoleId;
+            dbJoueur.BossVaincus = joueur.BossVaincus;
+            dbJoueur.DateDernierBoss = joueur.DateDernierBoss;
+        }
+
+        var dbPartie = db.Parties.FirstOrDefault(p => p.Id == partie.Id);
+        if (dbPartie is not null)
+        {
+            dbPartie.DateDebut = partie.DateDebut;
+            dbPartie.DateFin = partie.DateFin;
+            dbPartie.Etat = partie.Etat;
+            dbPartie.Mode = partie.Mode;
+            dbPartie.QuestionActuelleIndex = partie.QuestionActuelleIndex;
+            dbPartie.StreakActuelle = partie.StreakActuelle;
+            dbPartie.MeilleurStreak = partie.MeilleurStreak;
+        }
+
+        var dbScore = db.Scores.FirstOrDefault(s => s.Id == score.Id);
+        if (dbScore is not null)
+        {
+            dbScore.Points = score.Points;
+            dbScore.BonnesReponses = score.BonnesReponses;
+            dbScore.MauvaisesReponses = score.MauvaisesReponses;
+            dbScore.TempsTotal = score.TempsTotal;
+            dbScore.DatePartie = score.DatePartie;
+            dbScore.JokersUtilises = score.JokersUtilises;
+            dbScore.PourcentageReussite = score.PourcentageReussite;
+            dbScore.StreakMaximum = score.StreakMaximum;
+        }
+
         db.SaveChanges();
 
-        LogAction(joueur.Id, TypeAction.ScoreEnregistre, "Progression enregistrée", partie.Id);
+        if (logAction)
+        {
+            LogAction(joueur.Id, TypeAction.ScoreEnregistre, "Progression enregistrée", partie.Id);
+        }
     }
 
     public void FinishPartie(Joueur joueur, Partie partie, Score score)
     {
-        using var db = new ClavierOrContext();
-
         partie.Terminer();
         score.DatePartie = DateTime.Now;
         score.CalculerPourcentage();
@@ -309,10 +375,7 @@ public class GameService
             LogAction(joueur.Id, TypeAction.ClavierOrObtenu, "Titre Clavier d'Or atteint !", partie.Id);
         }
 
-        db.Joueurs.Update(joueur);
-        db.Parties.Update(partie);
-        db.Scores.Update(score);
-        db.SaveChanges();
+        PersistProgress(joueur, partie, score, logAction: false);
 
         LogAction(joueur.Id, TypeAction.PartieTerminee, $"Partie terminée avec {score.Points} points", partie.Id);
     }

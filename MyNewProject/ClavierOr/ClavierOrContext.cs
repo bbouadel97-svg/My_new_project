@@ -1,10 +1,52 @@
 using ClavierOr.Models;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace ClavierOr;
 
 public class ClavierOrContext : DbContext
 {
+    public static string GetDatabasePath()
+    {
+        var solutionRoot = FindSolutionRoot(AppContext.BaseDirectory)
+            ?? FindSolutionRoot(Directory.GetCurrentDirectory());
+
+        if (solutionRoot is not null)
+        {
+            var projectDbDir = Path.Combine(solutionRoot, "MyNewProject", "ClavierOr");
+            Directory.CreateDirectory(projectDbDir);
+            return Path.Combine(projectDbDir, "clavieror.db");
+        }
+
+        var fallbackDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ClavierOr");
+        Directory.CreateDirectory(fallbackDir);
+        return Path.Combine(fallbackDir, "clavieror.db");
+    }
+
+    public static void ConfigureSqlite(DbContextOptionsBuilder options)
+    {
+        options.UseSqlite($"Data Source={GetDatabasePath()}");
+    }
+
+    private static string? FindSolutionRoot(string startPath)
+    {
+        var current = new DirectoryInfo(startPath);
+
+        while (current is not null)
+        {
+            if (File.Exists(Path.Combine(current.FullName, "MyNewProject.sln")))
+            {
+                return current.FullName;
+            }
+
+            current = current.Parent;
+        }
+
+        return null;
+    }
+
     public ClavierOrContext()
     {
     }
@@ -26,7 +68,7 @@ public class ClavierOrContext : DbContext
     {
         if (!options.IsConfigured)
         {
-            options.UseSqlite("Data Source=clavieror.db");
+            ConfigureSqlite(options);
         }
     }
 }

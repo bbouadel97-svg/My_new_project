@@ -8,7 +8,7 @@ public class ClavierOrContextFactory : IDesignTimeDbContextFactory<ClavierOrCont
     public ClavierOrContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<ClavierOrContext>();
-        optionsBuilder.UseSqlite("Data Source=clavieror.db");
+        ClavierOrContext.ConfigureSqlite(optionsBuilder);
 
         return new ClavierOrContext(optionsBuilder.Options);
     }

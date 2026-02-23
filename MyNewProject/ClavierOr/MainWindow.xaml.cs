@@ -163,72 +163,87 @@ public partial class MainWindow : Window
 
     private void AnswerButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_currentPlayer is null || _currentPartie is null || _currentScore is null || _currentQuestion is null)
+        try
         {
-            return;
-        }
-
-        if (sender is not Button { Tag: Reponse selected })
-        {
-            return;
-        }
-
-        var role = _gameService.GetRoleById(_currentPlayer.RoleId);
-        var isCorrect = selected.EstCorrect;
-
-        if (!isCorrect && role?.Nom == "Back-End" && !_backEndRattrapageUsed)
-        {
-            isCorrect = true;
-            _backEndRattrapageUsed = true;
-            HintTextBlock.Text = "Rattrapage Back-End utilisé: réponse sauvée automatiquement.";
-        }
-
-        if (isCorrect)
-        {
-            var points = _currentQuestion.PointsAttribues;
-            if (_doublePointsActive)
+            if (_currentPlayer is null || _currentPartie is null || _currentScore is null || _currentQuestion is null)
             {
-                points *= 2;
-                _doublePointsActive = false;
+                return;
             }
 
-            if (role is not null)
+            if (sender is not Button { Tag: Reponse selected })
             {
-                points += role.BonusPoints;
-                points = (int)(points * role.MultiplicateurScore);
+                return;
             }
 
-            _currentScore.BonnesReponses++;
-            _currentScore.Points += points;
-            _currentPartie.EnregistrerBonneReponse();
-            _currentPlayer.AjouterExperience(15);
-            HintTextBlock.Text = "Bonne réponse !";
+            var role = _gameService.GetRoleById(_currentPlayer.RoleId);
+            var isCorrect = selected.EstCorrect;
+
+            if (!isCorrect && role?.Nom == "Back-End" && !_backEndRattrapageUsed)
+            {
+                isCorrect = true;
+                _backEndRattrapageUsed = true;
+                HintTextBlock.Text = "Rattrapage Back-End utilisé: réponse sauvée automatiquement.";
+            }
+
+            if (isCorrect)
+            {
+                var points = _currentQuestion.PointsAttribues;
+                if (_doublePointsActive)
+                {
+                    points *= 2;
+                    _doublePointsActive = false;
+                }
+
+                if (role is not null)
+                {
+                    points += role.BonusPoints;
+                    points = (int)(points * role.MultiplicateurScore);
+                }
+
+                _currentScore.BonnesReponses++;
+                _currentScore.Points += points;
+                _currentPartie.EnregistrerBonneReponse();
+                _currentPlayer.AjouterExperience(15);
+                HintTextBlock.Text = "Bonne réponse !";
+            }
+            else
+            {
+                _currentScore.MauvaisesReponses++;
+                _currentPartie.ReinitialiserStreak();
+                HintTextBlock.Text = selected.Explication ?? "Mauvaise réponse.";
+            }
+
+            var hasNext = _gameService.MoveNextQuestion(_currentPartie.Id);
+            if (hasNext)
+            {
+                _currentPartie.QuestionActuelleIndex++;
+            }
+
+            _currentScore.StreakMaximum = Math.Max(_currentScore.StreakMaximum, _currentPartie.MeilleurStreak);
+            _currentScore.CalculerPourcentage();
+            _gameService.PersistProgress(_currentPlayer, _currentPartie, _currentScore, logAction: false);
+
+            _gameService.LogAction(_currentPlayer.Id, TypeAction.ScoreEnregistre, $"Réponse à la question {_currentQuestion.Id}.", _currentPartie.Id);
+
+            if (!hasNext)
+            {
+                QuestionTextBlock.Text = "Quiz terminé. Cliquez sur 'Terminer partie'.";
+                AnswersPanel.Children.Clear();
+                StatusTextBlock.Text = "Fin des questions";
+            }
+            else
+            {
+                ChargerQuestionActuelle();
+            }
+
+            RefreshScoresGrid();
+            UpdateUiState();
         }
-        else
+        catch (Exception ex)
         {
-            _currentScore.MauvaisesReponses++;
-            _currentPartie.ReinitialiserStreak();
-            HintTextBlock.Text = selected.Explication ?? "Mauvaise réponse.";
+            FooterTextBlock.Text = "Erreur pendant la validation de la réponse.";
+            MessageBox.Show($"Une erreur est survenue au clic sur une réponse:\n{ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
-        _currentScore.StreakMaximum = Math.Max(_currentScore.StreakMaximum, _currentPartie.MeilleurStreak);
-        _currentScore.CalculerPourcentage();
-
-        _gameService.LogAction(_currentPlayer.Id, TypeAction.ScoreEnregistre, $"Réponse à la question {_currentQuestion.Id}.", _currentPartie.Id);
-
-        var hasNext = _gameService.MoveNextQuestion(_currentPartie.Id);
-        if (!hasNext)
-        {
-            QuestionTextBlock.Text = "Quiz terminé. Cliquez sur 'Terminer partie'.";
-            AnswersPanel.Children.Clear();
-            StatusTextBlock.Text = "Fin des questions";
-        }
-        else
-        {
-            ChargerQuestionActuelle();
-        }
-
-        UpdateUiState();
     }
 
     private void RoleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -275,6 +290,7 @@ public partial class MainWindow : Window
 
         if (_gameService.MoveNextQuestion(_currentPartie.Id))
         {
+            _currentPartie.QuestionActuelleIndex++;
             ChargerQuestionActuelle();
             HintTextBlock.Text = "Question changée grâce au bonus Front-End.";
         }
