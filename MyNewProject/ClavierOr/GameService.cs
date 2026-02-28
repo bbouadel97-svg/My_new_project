@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.IO;
 
 namespace ClavierOr;
 
@@ -87,7 +88,192 @@ public class GameService
             new Reponse("Changer le port HTTP", false),
             new Reponse("Compresser les scripts", false));
 
+        ImporterQuestionsDepuisCsv(db);
+
         db.SaveChanges();
+    }
+
+    private static void ImporterQuestionsDepuisCsv(ClavierOrContext db)
+    {
+        var csvPath = TrouverQuestionsCsvPath();
+        if (string.IsNullOrWhiteSpace(csvPath) || !File.Exists(csvPath))
+        {
+            return;
+        }
+
+        var rows = File.ReadLines(csvPath)
+            .Select(ParserLigneQuestionCsv)
+            .Where(parsed => parsed is not null)
+            .Select(parsed => parsed!.Value)
+            .ToList();
+
+        if (rows.Count == 0)
+        {
+            return;
+        }
+
+        var rowsParTheme = rows
+            .GroupBy(r => r.Theme)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var row in rows)
+        {
+            var enonceAvecTheme = $"[Thème {row.Theme}] {row.Enonce}";
+            var mauvaisesReponses = ConstruireMauvaisesReponses(rowsParTheme, row, 3);
+
+            var reponses = new List<Reponse>
+            {
+                new(row.Reponse, true)
+            };
+
+            reponses.AddRange(mauvaisesReponses.Select(texte => new Reponse(texte, false)));
+
+            AjouterQuestionEtReponsesManquantes(
+                db,
+                enonceAvecTheme,
+                DifficulteQuestion.Facile,
+                MapperThemeVersCategorie(row.Theme),
+                reponses.ToArray());
+        }
+    }
+
+    private static List<string> ConstruireMauvaisesReponses(
+        Dictionary<int, List<(int Theme, string Enonce, string Reponse)>> rowsParTheme,
+        (int Theme, string Enonce, string Reponse) row,
+        int maxCount)
+    {
+        if (!rowsParTheme.TryGetValue(row.Theme, out var themeRows) || themeRows.Count <= 1)
+        {
+            return new List<string>();
+        }
+
+        var candidates = themeRows
+            .Where(r => !string.Equals(r.Enonce, row.Enonce, StringComparison.OrdinalIgnoreCase))
+            .Select(r => r.Reponse.Trim())
+            .Where(r => !string.IsNullOrWhiteSpace(r) && !string.Equals(r, row.Reponse, StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (candidates.Count == 0)
+        {
+            return new List<string>();
+        }
+
+        var startIndex = Math.Abs(row.Enonce.GetHashCode()) % candidates.Count;
+
+        return candidates
+            .Skip(startIndex)
+            .Concat(candidates.Take(startIndex))
+            .Take(maxCount)
+            .ToList();
+    }
+
+    private static (int Theme, string Enonce, string Reponse)? ParserLigneQuestionCsv(string line)
+    {
+        if (string.IsNullOrWhiteSpace(line))
+        {
+            return null;
+        }
+
+        var trimmed = line.Trim();
+        var firstCommaIndex = trimmed.IndexOf(',');
+        if (firstCommaIndex <= 0)
+        {
+            return null;
+        }
+
+        var themeText = trimmed[..firstCommaIndex].Trim();
+        if (!int.TryParse(themeText, out var theme))
+        {
+            return null;
+        }
+
+        var rest = trimmed[(firstCommaIndex + 1)..].Trim();
+        if (string.IsNullOrWhiteSpace(rest))
+        {
+            return null;
+        }
+
+        string enonce;
+        string reponse;
+
+        var questionMarkIndex = rest.IndexOf('?');
+        var commaAfterQuestionIndex = questionMarkIndex >= 0
+            ? rest.IndexOf(',', questionMarkIndex)
+            : -1;
+
+        if (questionMarkIndex >= 0 && commaAfterQuestionIndex > questionMarkIndex)
+        {
+            enonce = rest[..(questionMarkIndex + 1)].Trim();
+            reponse = rest[(commaAfterQuestionIndex + 1)..].Trim();
+        }
+        else
+        {
+            var secondCommaIndex = rest.IndexOf(',');
+            if (secondCommaIndex <= 0)
+            {
+                return null;
+            }
+
+            enonce = rest[..secondCommaIndex].Trim();
+            reponse = rest[(secondCommaIndex + 1)..].Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(enonce) || string.IsNullOrWhiteSpace(reponse))
+        {
+            return null;
+        }
+
+        return (theme, enonce, reponse);
+    }
+
+    private static CategorieQuestion MapperThemeVersCategorie(int theme)
+    {
+        return theme switch
+        {
+            1 => CategorieQuestion.Web,
+            2 => CategorieQuestion.Testing,
+            3 => CategorieQuestion.Algorithmes,
+            4 => CategorieQuestion.Architecture,
+            5 => CategorieQuestion.DevOps,
+            _ => CategorieQuestion.POO
+        };
+    }
+
+    private static string? TrouverQuestionsCsvPath()
+    {
+        var possiblePaths = new[]
+        {
+            Path.Combine(AppContext.BaseDirectory, "QUESTIONS.CSV"),
+            Path.Combine(Directory.GetCurrentDirectory(), "QUESTIONS.CSV"),
+            Path.Combine(Directory.GetCurrentDirectory(), "MyNewProject", "ClavierOr", "QUESTIONS.CSV")
+        };
+
+        foreach (var path in possiblePaths)
+        {
+            if (File.Exists(path))
+            {
+                return path;
+            }
+        }
+
+        var current = new DirectoryInfo(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            var solutionPath = Path.Combine(current.FullName, "MyNewProject.sln");
+            if (File.Exists(solutionPath))
+            {
+                var fromSolution = Path.Combine(current.FullName, "MyNewProject", "ClavierOr", "QUESTIONS.CSV");
+                if (File.Exists(fromSolution))
+                {
+                    return fromSolution;
+                }
+            }
+
+            current = current.Parent;
+        }
+
+        return null;
     }
 
     private static void AjouterQuestionEtReponsesManquantes(
@@ -239,7 +425,7 @@ public class GameService
         return score ?? CreateScore(joueurId, partieId);
     }
 
-    public Question? GetCurrentQuestion(int partieId)
+    public Question? GetCurrentQuestion(int partieId, CategorieQuestion? categorie = null)
     {
         using var db = new ClavierOrContext();
 
@@ -250,7 +436,8 @@ public class GameService
             return null;
         }
 
-        var totalQuestions = db.Questions.Count();
+        var questionsQuery = FiltrerParCategorie(db.Questions.AsQueryable(), categorie);
+        var totalQuestions = questionsQuery.Count();
         if (totalQuestions == 0)
         {
             return null;
@@ -261,7 +448,7 @@ public class GameService
             return null;
         }
 
-        return db.Questions
+        return questionsQuery
             .OrderBy(q => q.Id)
             .Skip(partie.QuestionActuelleIndex)
             .FirstOrDefault();
@@ -273,10 +460,10 @@ public class GameService
         return db.Parties.Where(p => p.Id == partieId).Select(p => p.QuestionActuelleIndex).FirstOrDefault();
     }
 
-    public int GetQuestionCount(int partieId)
+    public int GetQuestionCount(int partieId, CategorieQuestion? categorie = null)
     {
         using var db = new ClavierOrContext();
-        return db.Questions.Count();
+        return FiltrerParCategorie(db.Questions.AsQueryable(), categorie).Count();
     }
 
     public List<Reponse> GetReponsesForQuestion(int questionId)
@@ -285,7 +472,7 @@ public class GameService
         return db.Reponses.Where(r => r.QuestionId == questionId).OrderBy(r => r.Id).ToList();
     }
 
-    public bool MoveNextQuestion(int partieId)
+    public bool MoveNextQuestion(int partieId, CategorieQuestion? categorie = null)
     {
         using var db = new ClavierOrContext();
         var partie = db.Parties.FirstOrDefault(p => p.Id == partieId);
@@ -294,7 +481,7 @@ public class GameService
             return false;
         }
 
-        var questionCount = db.Questions.Count();
+        var questionCount = FiltrerParCategorie(db.Questions.AsQueryable(), categorie).Count();
         if (partie.QuestionActuelleIndex + 1 >= questionCount)
         {
             return false;
@@ -303,6 +490,16 @@ public class GameService
         partie.QuestionActuelleIndex++;
         db.SaveChanges();
         return true;
+    }
+
+    private static IQueryable<Question> FiltrerParCategorie(IQueryable<Question> query, CategorieQuestion? categorie)
+    {
+        if (categorie is null)
+        {
+            return query;
+        }
+
+        return query.Where(q => q.Categorie == categorie.Value);
     }
 
     public void PersistProgress(Joueur joueur, Partie partie, Score score, bool logAction = true)

@@ -12,6 +12,7 @@ public partial class MainWindow : Window
     private Partie? _currentPartie;
     private Score? _currentScore;
     private Question? _currentQuestion;
+    private CategorieQuestion? _currentTheme;
     private bool _doublePointsActive;
     private bool _backEndRattrapageUsed;
 
@@ -20,6 +21,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         _gameService.InitialiserDonnees();
         ChargerRoles();
+        ChargerThemes();
         RefreshScoresGrid();
         UpdateUiState();
     }
@@ -30,6 +32,12 @@ public partial class MainWindow : Window
         RoleComboBox.DisplayMemberPath = nameof(Role.Nom);
         RoleComboBox.SelectedValuePath = nameof(Role.Id);
         RoleComboBox.SelectedIndex = 0;
+    }
+
+    private void ChargerThemes()
+    {
+        ThemeComboBox.ItemsSource = Enum.GetValues<CategorieQuestion>();
+        ThemeComboBox.SelectedIndex = -1;
     }
 
     private void NewGameButton_Click(object sender, RoutedEventArgs e)
@@ -47,13 +55,21 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (ThemeComboBox.SelectedItem is not CategorieQuestion theme)
+        {
+            MessageBox.Show("Sélectionnez un thème avant de démarrer.");
+            return;
+        }
+
+        _currentTheme = theme;
+
         _currentPlayer = _gameService.GetOrCreatePlayer(pseudo, role.Id);
         _currentPartie = _gameService.StartNewPartie(_currentPlayer.Id);
         _currentScore = _gameService.CreateScore(_currentPlayer.Id, _currentPartie.Id);
         _doublePointsActive = false;
         _backEndRattrapageUsed = false;
 
-        AjouterHistoriqueLocal($"Nouvelle partie pour {_currentPlayer.Pseudo}.");
+        AjouterHistoriqueLocal($"Nouvelle partie pour {_currentPlayer.Pseudo} - thème {_currentTheme}.");
         ChargerQuestionActuelle();
         UpdateUiState();
         FooterTextBlock.Text = "Partie démarrée.";
@@ -75,10 +91,18 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (ThemeComboBox.SelectedItem is not CategorieQuestion theme)
+        {
+            MessageBox.Show("Sélectionnez un thème avant de reprendre.");
+            return;
+        }
+
+        _currentTheme = theme;
+
         _currentPlayer = player;
         _currentPartie = _gameService.ResumeOrCreatePartie(player.Id);
         _currentScore = _gameService.ResumeOrCreateScore(player.Id, _currentPartie.Id);
-        _currentQuestion = _gameService.GetCurrentQuestion(_currentPartie.Id);
+        _currentQuestion = _gameService.GetCurrentQuestion(_currentPartie.Id, _currentTheme);
 
         if (_currentQuestion is null)
         {
@@ -89,7 +113,7 @@ public partial class MainWindow : Window
             AfficherQuestion(_currentQuestion);
         }
 
-        AjouterHistoriqueLocal("Partie reprise.");
+        AjouterHistoriqueLocal($"Partie reprise - thème {_currentTheme}.");
         UpdateUiState();
         FooterTextBlock.Text = "Partie reprise.";
     }
@@ -130,10 +154,16 @@ public partial class MainWindow : Window
             return;
         }
 
-        _currentQuestion = _gameService.GetCurrentQuestion(_currentPartie.Id);
+        if (_currentTheme is null)
+        {
+            MessageBox.Show("Sélectionnez un thème.");
+            return;
+        }
+
+        _currentQuestion = _gameService.GetCurrentQuestion(_currentPartie.Id, _currentTheme);
         if (_currentQuestion is null)
         {
-            MessageBox.Show("Plus de questions. Terminez la partie.");
+            MessageBox.Show("Plus de questions pour ce thème. Terminez la partie.");
             return;
         }
 
@@ -143,7 +173,8 @@ public partial class MainWindow : Window
     private void AfficherQuestion(Question question)
     {
         QuestionTextBlock.Text = question.Enonce;
-        StatusTextBlock.Text = $"Question {_gameService.GetQuestionIndex(_currentPartie!.Id) + 1}/{_gameService.GetQuestionCount(_currentPartie.Id)} | Difficulté: {question.Difficulte}";
+        var total = _gameService.GetQuestionCount(_currentPartie!.Id, _currentTheme);
+        StatusTextBlock.Text = $"Thème: {_currentTheme} | Question {_gameService.GetQuestionIndex(_currentPartie.Id) + 1}/{total} | Difficulté: {question.Difficulte}";
         HintTextBlock.Text = string.Empty;
 
         AnswersPanel.Children.Clear();
@@ -213,7 +244,7 @@ public partial class MainWindow : Window
                 HintTextBlock.Text = selected.Explication ?? "Mauvaise réponse.";
             }
 
-            var hasNext = _gameService.MoveNextQuestion(_currentPartie.Id);
+            var hasNext = _gameService.MoveNextQuestion(_currentPartie.Id, _currentTheme);
             if (hasNext)
             {
                 _currentPartie.QuestionActuelleIndex++;
@@ -256,6 +287,23 @@ public partial class MainWindow : Window
         UpdateUiState();
     }
 
+    private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_currentPartie is null)
+        {
+            if (ThemeComboBox.SelectedItem is CategorieQuestion theme)
+            {
+                _currentTheme = theme;
+            }
+            else
+            {
+                _currentTheme = null;
+            }
+        }
+
+        UpdateUiState();
+    }
+
     private void HintButton_Click(object sender, RoutedEventArgs e)
     {
         if (_currentQuestion is null || _currentPlayer is null)
@@ -288,7 +336,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (_gameService.MoveNextQuestion(_currentPartie.Id))
+        if (_gameService.MoveNextQuestion(_currentPartie.Id, _currentTheme))
         {
             _currentPartie.QuestionActuelleIndex++;
             ChargerQuestionActuelle();
@@ -362,6 +410,10 @@ public partial class MainWindow : Window
 
         var selectedRole = RoleComboBox.SelectedItem as Role;
         var roleName = selectedRole?.Nom ?? string.Empty;
+        var hasThemeSelected = ThemeComboBox.SelectedItem is CategorieQuestion;
+
+        NewGameButton.IsEnabled = hasThemeSelected;
+        ResumeGameButton.IsEnabled = hasThemeSelected;
         HintButton.IsEnabled = hasGame && roleName == "Mobile";
         SkipButton.IsEnabled = hasGame && roleName == "Front-End";
         DoubleButton.IsEnabled = hasGame;

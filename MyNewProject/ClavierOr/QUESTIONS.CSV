@@ -1,0 +1,100 @@
+3,Qu’est-ce qu’un 1rithme ?,Une suite d’instructions permettant de résoudre un problème ou d’accomplir une tâche
+3,Quelle structure de contrôle permet de répéter des instructions ?,Une boucle 
+3,Quelle est la différence entre un 1rithme itératif et récursif ?,L’itératif utilise des boucles
+3,Qu’est-ce qu’une variable dans un 1rithme ?,Un espace de stockage pour une valeur qui peut changer
+3,Qu’est-ce qu’une condition dans un 1rithme ?,Une expression qui permet de décider quel chemin suivre
+3,À quoi sert un diagramme de flux (flowchart) ?,À représenter visuellement un 1rithme
+3,Qu’est-ce qu’une fonction ou procédure ?,Un bloc d’instructions réutilisable pour effectuer une tâche précise
+3,Que signifie "complexité 1rithmique" ?,L’évaluation du temps ou de l’espace nécessaires pour exécuter un 1rithme
+3,Quel est le rôle d’un tableau (array) dans un 1rithme ?,Stocker plusieurs valeurs du même type sous un même nom
+3,Qu’est-ce qu’une pile (stack) ?,Une structure de données où le dernier élément ajouté est le premier à sortir  
+3,Qu’est-ce qu’une file (queue) ?,Une structure de données où le premier élément ajouté est le premier à sortir 
+3,Quelle est la différence entre tri par insertion et tri à bulles ?,Tri par insertion insère chaque élément à sa place
+3,Qu’est-ce qu’une condition "if-else" ?,Une structure qui exécute un bloc si la condition est vraie et un autre bloc sinon
+3,Qu’est-ce que la récursivité ?,Quand une fonction s’appelle elle-même pour résoudre un problème
+3,Qu’est-ce qu’un 1rithme de recherche linéaire ?,Chercher un élément dans une liste en vérifiant un par un tous les éléments
+3,Qu’est-ce qu’un 1rithme de recherche binaire ?,Chercher dans une liste triée en divisant la liste par deux à chaque étape
+3,Qu’est-ce qu’une complexité en O(n) ?,Le temps d’exécution augmente proportionnellement à la taille des données
+3,Qu’est-ce qu’une structure de données ?,Une organisation particulière des données pour faciliter leur manipulation
+3,Qu’est-ce qu’une liste chaînée ?,Une suite d’éléments où chaque élément pointe vers le suivant
+3,Qu’est-ce qu’un 1rithme glouton (greedy) ?,Un 1rithme qui fait le choix le plus optimal à chaque étape
+5,Quel métier conçoit et développe des logiciels ?, Programmeur
+5,Qui s’occupe de l’installation et de la maintenance des réseaux informatiques ?,Administrateur réseau
+5,Quel professionnel protège les systèmes informatiques contre les cyberattaques ?,Expert en cybersécurité
+5,Qui analyse des données pour en tirer des informations utiles ?,Data analyst
+5,Quel métier consiste à créer des applications mobiles ?,Développeur mobile
+5,Qui conçoit l’architecture technique des systèmes informatiques ?,Architecte informatique
+5,Qui teste les logiciels pour détecter les bugs ?,Testeur logiciel / QA engineer
+5,Quel métier consiste à gérer les bases de données ?,Administrateur base de données (DBA)
+5,Qui développe des sites web interactifs et dynamiques ?,Développeur web
+5,Qui assure le support technique auprès des utilisateurs ?,Technicien support informatique
+5,Quel métier utilise l’intelligence artificielle pour résoudre des problèmes ?,Ingénieur en intelligence artificielle / Machine Learning engineer
+5,Qui gère la sécurité et la confidentialité des données ?,Responsable sécurité des systèmes d’information
+5,Qui transforme de grandes quantités de données brutes en informations exploitables ?,Data scientist
+5,Qui crée des interfaces utilisateur attractives et ergonomiques ?,Designer 
+5,Quel métier conçoit et supervise l’architecture des systèmes cloud ?,Architecte cloud
+5,Qui gère le déploiement et le fonctionnement des applications sur les serveurs ?,DevOps engineer
+5,Qui s’occupe de l’intelligence économique et de l’analyse des systèmes d’information ?,Analyste SI
+5,Qui conçoit des jeux vidéo et leur logique ?,Game designer / Développeur de jeux vidéo
+5,Quel métier consiste à maintenir le matériel informatique et les périphériques ?,Technicien informatique / Technicien matériel
+5,Qui coordonne des projets informatiques et gère les équipes ?,Chef de projet informatique
+2,Si tous les chats sont des animaux et que Félix est un chat, Félix est-il un animal ?
+2,Quel nombre complète la série : 2, 4, 8, 16, … ?,32
+2,Si A implique B et B est vrai, peut-on conclure que A est vrai 
+2,Quelle est la négation de "Tous les oiseaux volent" ?,Il existe au moins un oiseau qui ne vole pas
+2,Si aujourd’hui il pleut, alors je prends mon parapluie. Il pleut. Que fais-je ?
+2,Complétez la suite logique : 1, 1, 2, 3, 5, 8, …,13 (suite de Fibonacci)
+2,Si trois crayons coûtent 6 euros, combien coûtent 5 crayons au même prix ?
+2,Trouvez l’intrus : 2, 3, 5, 7, 9, 11,9 (ce n’est pas un nombre premier)
+2,Si A est plus grand que B et B est plus grand que C, qui est le plus petit ?
+2,Quel nombre complète la série : 3, 6, 12, 24, … ?,48
+2,Si je lance deux dés, quelle est la probabilité d’obtenir un total de 7 ?
+2,Résolvez l’énigme : Je suis plus grand que Dieu, plus mauvais que le diable
+2,Complétez : Si tous les A sont B, et certains B sont C
+2,Trouvez le mot manquant : chat est à chaton ce que chien est à …,Chiot
+2,Quel nombre manque : 2, 5, 10, 17, … ?,26 (ajouter 3, 5, 7, 9…)
+2,Si Pierre est plus âgé que Paul et Paul est plus âgé que Marie, qui est le plus âgé ?
+2,Complétez la suite : 1, 4, 9, 16, … ?,25 (nombres carrés)
+2,Si deux trains partent en même temps à la même vitesse dans des directions opposées, que se passe-t-il par rapport à leur distance ? 
+2,Quel est le prochain élément de la série : J, F, M, A, M, … ?,J (mois de l’année : Juin)
+2,Résolvez l’énigme : Un fermier a 17 moutons et tous sauf 9 meurent. Combien lui reste-t-il de moutons ?,9
+4,Quelle est la capitale de l’Espagne ?,Madrid
+4,Qui a peint la Joconde ?,Léonard de Vinci
+4,Quel est le plus grand océan du monde ?,L’océan Pacifique
+4,En quelle année l’homme a-t-il marché sur la Lune pour la première fois ?,1969
+4,Quel pays est surnommé le pays du Soleil-Levant ?,Le Japon
+4,Qui a écrit "Les Misérables" ?,Victor Hugo
+4,Quelle est la langue officielle du Brésil ?,Le portugais
+4,Quel est l’élément chimique dont le symbole est O ?,L’oxygène
+4,Quelle est la plus grande planète du système solaire ?,Jupiter
+4,Quel inventeur a créé le téléphone ?,Alexander Graham Bell
+4,Quel pays a inventé les Jeux Olympiques ?,La Grèce
+4,Quelle est la monnaie du Royaume-Uni ?,La livre 
+4,Qui est l’auteur de "Roméo et Juliette" ?,William Shakespeare
+4,Quelle est la capitale de l’Australie ?,Canberra
+4,Quel est le plus long fleuve du monde ?,Le Nil 
+4,Qui a développé la théorie de la relativité ?,Albert Einstein
+4,Quel est le pays le plus peuplé du monde ?,La Chine
+4,Combien de continents existe-t-il sur Terre ?,7
+4,Quel animal est connu pour sa lenteur et sa carapace ?,La tortue
+4,Quel est le symbole chimique de l’or ?,Au
+1,Comment dit-on "Bonjour" en anglais ?,Hello
+1,Comment dit-on "Merci" en anglais ?,Thank you
+1,Que signifie "Good morning" ?,Bonjour 
+1,Comment dit-on "Je m’appelle Othmane" en anglais ?,My name is Othmane
+1,Que signifie "I love you" ?,Je t’aime
+1,Comment dit-on "Au revoir" en anglais ?,Goodbye
+1,Que signifie "See you later" ?,À plus tard
+1,Comment dit-on "Je suis étudiant" en anglais ?,I am a student
+1,Que signifie "What time is it ?",Quelle heure est-il ?
+1,Comment dit-on "J’ai faim" en anglais ?,I am hungry
+1,Que signifie "Where is the bathroom ?",Où sont les toilettes ?
+1,Comment dit-on "Je veux un café" en anglais ?,I want a coffee
+1,Que signifie "How are you ?",Comment ça va ?
+1,Comment dit-on "Je ne comprends pas" en anglais ?,I don’t understand
+1,Que signifie "Happy birthday ?",Joyeux anniversaire
+1,Comment dit-on "Bonne nuit" en anglais ?,Good night
+1,Que signifie "I like reading books ?",J’aime lire des livres
+1,Comment dit-on "Excusez-moi" en anglais ?,Excuse me
+1,Que signifie "Can you help me ?",Pouvez-vous m’aider ?
+1,Comment dit-on "Je suis fatigué" en anglais ?,I am tired

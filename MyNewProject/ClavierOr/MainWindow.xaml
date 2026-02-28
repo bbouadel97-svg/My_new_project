@@ -20,6 +20,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
@@ -33,7 +34,12 @@
                     <ComboBox x:Name="RoleComboBox" Height="30" Margin="0,4,0,0" SelectionChanged="RoleComboBox_SelectionChanged"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                    <TextBlock Text="Thème"/>
+                    <ComboBox x:Name="ThemeComboBox" Height="30" Margin="0,4,0,0" SelectionChanged="ThemeComboBox_SelectionChanged"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
                     <Button x:Name="NewGameButton" Content="Nouvelle partie" Width="130" Height="32" Margin="0,0,6,0" Click="NewGameButton_Click"/>
                     <Button x:Name="ResumeGameButton" Content="Reprendre" Width="90" Height="32" Margin="0,0,6,0" Click="ResumeGameButton_Click"/>
                     <Button x:Name="SaveButton" Content="Enregistrer" Width="100" Height="32" Click="SaveButton_Click"/>
